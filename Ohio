@@ -43,20 +43,19 @@ SectionHome1:AddButton({
 
         -- Example of disabling script signals
         local playerscripts = game:GetService('Players').LocalPlayer.PlayerScripts
-        local script1 = playerscripts.LocalScript
-        local script2 = playerscripts.LocalScript2
+        local script1 = playerscripts:FindFirstChild("LocalScript")
+        local script2 = playerscripts:FindFirstChild("LocalScript2")
 
         local function disableConnections(signal)
-            for i, connection in next, debug.getconnections(signal) do
-                connection:Disable()
+            if signal then
+                for i, connection in next, debug.getconnections(signal) do
+                    connection:Disable()
+                end
             end
         end
 
-        disableConnections(script1.Changed)
-        disableConnections(script2.Changed)
-
-        script1:Destroy()
-        script2:Destroy()
+        if script1 then disableConnections(script1.Changed) script1:Destroy() end
+        if script2 then disableConnections(script2.Changed) script2:Destroy() end
     end
 })
 
@@ -67,7 +66,6 @@ local TabMain = Window:MakeTab({
     PremiumOnly = false
 })
 
--- Section in Main Tab for Seygma features
 local SectionMain1 = TabMain:AddSection({
     Name = "Seygma"
 })
@@ -121,7 +119,6 @@ SectionMain1:AddButton({
     end
 })
 
--- Section in Main Tab for destroying killParts
 SectionMain1:AddButton({
     Name = "Destroy killParts",
     Callback = function()
@@ -133,23 +130,21 @@ SectionMain1:AddButton({
     end
 })
 
--- Player Tab
 local TabPlr = Window:MakeTab({
     Name = "Player",
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
 })
 
--- Section in Player Tab for Tools
 local SectionPlr1 = TabPlr:AddSection({
     Name = "Tools"
 })
 
--- Adding buttons for each gear/tool
 local function equipGear(gearName)
     local gear = game.ReplicatedStorage.Gear:FindFirstChild(gearName)
     if gear then
-        gear.Parent = game.Players.LocalPlayer.Backpack
+        local player = game.Players.LocalPlayer
+        gear:Clone().Parent = player.Backpack
     else
         print("Gear '" .. gearName .. "' not found.")
     end
@@ -172,60 +167,59 @@ SectionPlr1:AddButton({
 SectionPlr1:AddButton({
     Name = "Fusion Coil",
     Callback = function()
-    local gear = game.ReplicatedStorage.Gear.fusion
-    gear.Parent = game.Players.LocalPlayer.Backpack
+        equipGear("fusion")
+    end
 })
 
 SectionPlr1:AddButton({
     Name = "HourGlass",
     Callback = function()
-    local gear = game.ReplicatedStorage.Gear.hourglass
-    gear.Parent = game.Players.LocalPlayer.Backpack
+        equipGear("hourglass")
+    end
 })
 
 SectionPlr1:AddButton({
     Name = "Grapple Hook",
     Callback = function()
-    local gear = game.ReplicatedStorage.Gear.hook
-    gear.Parent = game.Players.LocalPlayer.Backpack
+        equipGear("hook")
+    end
 })
 
 SectionPlr1:AddButton({
     Name = "Trowel",
     Callback = function()
-    local gear = game.ReplicatedStorage.Gear.trowel
-    gear.Parent = game.Players.LocalPlayer.Backpack
+        equipGear("trowel")
+    end
 })
 
 SectionPlr1:AddButton({
     Name = "Banana",
     Callback = function()
-    local gear = game.ReplicatedStorage.Gear.banana
-    gear.Parent = game.Players.LocalPlayer.Backpack
+        equipGear("banana")
+    end
 })
 
 SectionPlr1:AddButton({
     Name = "Fishing Rod",
     Callback = function()
-    local gear = game.ReplicatedStorage.Gear.fishingrod
-    gear.Parent = game.Players.LocalPlayer.Backpack
+        equipGear("fishingrod")
+    end
 })
 
 SectionPlr1:AddButton({
     Name = "Bomb",
     Callback = function()
-    local gear = game.ReplicatedStorage.Gear.bomb
-    gear.Parent = game.Players.LocalPlayer.Backpack
+        equipGear("bomb")
+    end
 })
 
 SectionPlr1:AddButton({
     Name = "YxTerminator",
     Callback = function()
-    local gear = game.ReplicatedStorage.Gear.yxterminator
-    gear.Parent = game.Players.LocalPlayer.Backpack
+        equipGear("yxterminator")
+    end
 })
 
--- Section in Player Tab to get all tools
 local SectionPlr2 = TabPlr:AddSection({
     Name = "Get All Tools"
 })
@@ -233,17 +227,25 @@ local SectionPlr2 = TabPlr:AddSection({
 SectionPlr2:AddButton({
     Name = "Give All Items",
     Callback = function()
-        for _, e in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
-            if e:IsA("Tool") then
-                e:Destroy()
+        local player = game.Players.LocalPlayer
+        local backpack = player.Backpack
+
+        for _, tool in pairs(backpack:GetChildren()) do
+            if tool:IsA("Tool") then
+                tool:Destroy()
             end
         end
 
-        for _, v in pairs(game.ReplicatedStorage.Gear:GetChildren()) do
-            if v:IsA("Tool") then
-                local CloneThings = v:Clone()
-                CloneThings.Parent = game.Players.LocalPlayer.Backpack
+        local gearFolder = game.ReplicatedStorage:FindFirstChild("Gear")
+        if gearFolder then
+            for _, gear in pairs(gearFolder:GetChildren()) do
+                if gear:IsA("Tool") then
+                    local gearClone = gear:Clone()
+                    gearClone.Parent = backpack
+                end
             end
+        else
+            print("Real.")
         end
     end
 })
