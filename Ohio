@@ -1,0 +1,249 @@
+local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
+
+local Window = OrionLib:MakeWindow({
+    Name = "Tower of Hell (Seygma Edition)",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "OrionTest"
+})
+
+-- Home Tab
+local TabHome = Window:MakeTab({
+    Name = "Home",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- Section in Home Tab for AntiCheat (example, be cautious with anti-cheat measures)
+local SectionHome1 = TabHome:AddSection({
+    Name = "AntiCheat"
+})
+
+SectionHome1:AddButton({
+    Name = "Bypass AntiCheat",
+    Callback = function()
+        -- Example of hooking a function named 'kick'
+        local function hookKick()
+            return
+        end
+
+        local reg = debug.getregistry()
+        for i, Function in next, reg do
+            if type(Function) == 'function' then
+                local info = debug.getinfo(Function)
+                if info.name == 'kick' then
+                    if hookfunction(info.func, hookKick) then
+                        print('Successfully hooked kick')
+                    else
+                        print('Failed to hook kick')
+                    end
+                end
+            end
+        end
+
+        -- Example of disabling script signals
+        local playerscripts = game:GetService('Players').LocalPlayer.PlayerScripts
+        local script1 = playerscripts.LocalScript
+        local script2 = playerscripts.LocalScript2
+
+        local function disableConnections(signal)
+            for i, connection in next, debug.getconnections(signal) do
+                connection:Disable()
+            end
+        end
+
+        disableConnections(script1.Changed)
+        disableConnections(script2.Changed)
+
+        script1:Destroy()
+        script2:Destroy()
+    end
+})
+
+-- Main Tab
+local TabMain = Window:MakeTab({
+    Name = "Main",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- Section in Main Tab for Seygma features
+local SectionMain1 = TabMain:AddSection({
+    Name = "Seygma"
+})
+
+SectionMain1:AddButton({
+    Name = "Win Round!",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character
+        local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+        if not humanoidRootPart then
+            return
+        end
+
+        local targetPart = game:GetService("Workspace").tower.sections.finish.exit.ParticleBrick
+        humanoidRootPart.CFrame = targetPart.CFrame
+    end
+})
+
+SectionMain1:AddButton({
+    Name = "Win Round! (New)",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+        local targetPart1 = game:GetService("Workspace").tower.sections.finish.exit.ParticleBrick
+        local targetPart2 = game:GetService("Workspace").tower.sections.finish.FinishGlow
+
+        humanoidRootPart.CFrame = targetPart1.CFrame
+        wait(1)
+
+        local TweenService = game:GetService("TweenService")
+        local tweenInfo = TweenInfo.new(
+            1, -- Duration in seconds
+            Enum.EasingStyle.Quad, -- Easing style
+            Enum.EasingDirection.Out, -- Easing direction
+            0, -- Times to repeat (0 means no repeat)
+            false, -- Reverses (false means it doesn't reverse)
+            0 -- Delay time
+        )
+
+        local goal = {
+            CFrame = targetPart2.CFrame
+        }
+
+        local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
+        tween:Play()
+        wait(3.10)
+        humanoidRootPart.CFrame = CFrame.new(-25.1926422, 9.84999943, 5.85460472)
+    end
+})
+
+-- Section in Main Tab for destroying killParts
+SectionMain1:AddButton({
+    Name = "Destroy killParts",
+    Callback = function()
+        for i, v in pairs(game:GetService("Workspace").tower:GetDescendants()) do
+            if v:IsA("BoolValue") and v.Name == "kills" then
+                v.Parent:Destroy()
+            end
+        end
+    end
+})
+
+-- Player Tab
+local TabPlr = Window:MakeTab({
+    Name = "Player",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- Section in Player Tab for Tools
+local SectionPlr1 = TabPlr:AddSection({
+    Name = "Tools"
+})
+
+-- Adding buttons for each gear/tool
+local function equipGear(gearName)
+    local gear = game.ReplicatedStorage.Gear:FindFirstChild(gearName)
+    if gear then
+        gear.Parent = game.Players.LocalPlayer.Backpack
+    else
+        print("Gear '" .. gearName .. "' not found.")
+    end
+end
+
+SectionPlr1:AddButton({
+    Name = "Gravity Coil",
+    Callback = function()
+        equipGear("gravity")
+    end
+})
+
+SectionPlr1:AddButton({
+    Name = "Speed Coil",
+    Callback = function()
+        equipGear("speed")
+    end
+})
+
+SectionPlr1:AddButton({
+    Name = "Fusion Coil",
+    Callback = function()
+    local gear = game.ReplicatedStorage.Gear.fusion
+    gear.Parent = game.Players.LocalPlayer.Backpack
+})
+
+SectionPlr1:AddButton({
+    Name = "HourGlass",
+    Callback = function()
+    local gear = game.ReplicatedStorage.Gear.hourglass
+    gear.Parent = game.Players.LocalPlayer.Backpack
+})
+
+SectionPlr1:AddButton({
+    Name = "Grapple Hook",
+    Callback = function()
+    local gear = game.ReplicatedStorage.Gear.hook
+    gear.Parent = game.Players.LocalPlayer.Backpack
+})
+
+SectionPlr1:AddButton({
+    Name = "Trowel",
+    Callback = function()
+    local gear = game.ReplicatedStorage.Gear.trowel
+    gear.Parent = game.Players.LocalPlayer.Backpack
+})
+
+SectionPlr1:AddButton({
+    Name = "Banana",
+    Callback = function()
+    local gear = game.ReplicatedStorage.Gear.banana
+    gear.Parent = game.Players.LocalPlayer.Backpack
+})
+
+SectionPlr1:AddButton({
+    Name = "Fishing Rod",
+    Callback = function()
+    local gear = game.ReplicatedStorage.Gear.fishingrod
+    gear.Parent = game.Players.LocalPlayer.Backpack
+})
+
+SectionPlr1:AddButton({
+    Name = "Bomb",
+    Callback = function()
+    local gear = game.ReplicatedStorage.Gear.bomb
+    gear.Parent = game.Players.LocalPlayer.Backpack
+})
+
+SectionPlr1:AddButton({
+    Name = "YxTerminator",
+    Callback = function()
+    local gear = game.ReplicatedStorage.Gear.yxterminator
+    gear.Parent = game.Players.LocalPlayer.Backpack
+})
+
+-- Section in Player Tab to get all tools
+local SectionPlr2 = TabPlr:AddSection({
+    Name = "Get All Tools"
+})
+
+SectionPlr2:AddButton({
+    Name = "Give All Items",
+    Callback = function()
+        for _, e in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+            if e:IsA("Tool") then
+                e:Destroy()
+            end
+        end
+
+        for _, v in pairs(game.ReplicatedStorage.Gear:GetChildren()) do
+            if v:IsA("Tool") then
+                local CloneThings = v:Clone()
+                CloneThings.Parent = game.Players.LocalPlayer.Backpack
+            end
+        end
+    end
+})
