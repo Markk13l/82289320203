@@ -1,7 +1,7 @@
 local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
 local Player = game.Players.LocalPlayer
 
-getgenv().autoFinish = false
+local antiCheat = true
 local JumpEnabled = false
 local Window = OrionLib:MakeWindow({
     Name = "Tower of Hell (Seygma Edition)",
@@ -40,7 +40,7 @@ SectionHome1:AddToggle({
 -- This coroutine will run once to check the initial state of antiCheat
 coroutine.wrap(function()
     if antiCheat then
-                local function hookKick()
+        local function hookKick()
             return
         end
 
@@ -75,6 +75,13 @@ coroutine.wrap(function()
         if script2 then disableConnections(script2.Changed) script2:Destroy() end
     end
 end)()
+
+-- Main Tab
+local TabMain = Window:MakeTab({
+    Name = "Main",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
 
 local SectionMain1 = TabMain:AddSection({
     Name = "Seygma"
@@ -124,7 +131,7 @@ SectionMain1:AddButton({
 
         local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
         tween:Play()
-        wait(3.10)
+        wait(3)
         humanoidRootPart.CFrame = CFrame.new(-25.1926422, 9.84999943, 5.85460472)
     end
 })
@@ -140,6 +147,7 @@ SectionMain1:AddButton({
     end
 })
 
+-- Player Tab
 local TabPlr = Window:MakeTab({
     Name = "Player",
     Icon = "rbxassetid://4483345998",
@@ -279,11 +287,11 @@ SectionPlr3:AddTextbox({
                 humanoid.WalkSpeed = speed
                 print("Speed set to " .. speed)
             else
-             game.StarterGui:SetCore("SendNotification",  {
-            Title = "Notification";
-            Text = "Invalid speed value";
-            Duration = 3;
-            })
+                game.StarterGui:SetCore("SendNotification",  {
+                    Title = "Notification";
+                    Text = "Invalid speed value";
+                    Duration = 3;
+                })
             end
         end
     end
