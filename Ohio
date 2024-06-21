@@ -1,5 +1,8 @@
 local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
+local Player = game.Players.LocalPlayer
 
+getgenv().autoFinish = false
+local JumpEnabled = false
 local Window = OrionLib:MakeWindow({
     Name = "Tower of Hell (Seygma Edition)",
     HidePremium = false,
@@ -14,16 +17,30 @@ local TabHome = Window:MakeTab({
     PremiumOnly = false
 })
 
--- Section in Home Tab for AntiCheat (example, be cautious with anti-cheat measures)
+local SectionUser = TabHome:AddSection({
+    Name = "Username"
+})
+
+SectionUser:AddLabel("Hello, " .. Player.Name .. ".")
+
 local SectionHome1 = TabHome:AddSection({
     Name = "AntiCheat"
 })
 
-SectionHome1:AddButton({
-    Name = "Bypass AntiCheat",
-    Callback = function()
-        -- Example of hooking a function named 'kick'
-        local function hookKick()
+SectionHome1:AddToggle({
+    Name = "AntiCheat",
+    Default = true,
+    Callback = function(bool)
+        antiCheat = bool
+        if antiCheat then
+        end
+    end
+})
+
+-- This coroutine will run once to check the initial state of antiCheat
+coroutine.wrap(function()
+    if antiCheat then
+                local function hookKick()
             return
         end
 
@@ -57,14 +74,7 @@ SectionHome1:AddButton({
         if script1 then disableConnections(script1.Changed) script1:Destroy() end
         if script2 then disableConnections(script2.Changed) script2:Destroy() end
     end
-})
-
--- Main Tab
-local TabMain = Window:MakeTab({
-    Name = "Main",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
+end)()
 
 local SectionMain1 = TabMain:AddSection({
     Name = "Seygma"
@@ -249,3 +259,49 @@ SectionPlr2:AddButton({
         end
     end
 })
+
+local SectionPlr3 = TabPlr:AddSection({
+    Name = "Humanoid"
+})
+
+SectionPlr3:AddTextbox({
+    Name = "WalkSpeed",
+    Default = "",
+    TextDisappear = true,
+    Callback = function(Value)
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        
+        if humanoid then
+            local speed = tonumber(Value)
+            if speed then
+                humanoid.WalkSpeed = speed
+                print("Speed set to " .. speed)
+            else
+             game.StarterGui:SetCore("SendNotification",  {
+            Title = "Notification";
+            Text = "Invalid speed value";
+            Duration = 3;
+            })
+            end
+        end
+    end
+})
+
+SectionPlr3:AddToggle({
+	Name = "InfJump!",
+	Default = false,
+	Callback = function(bool)
+		shared.toggle = bool
+    print("InfJump"..tostring(shared.toggle))
+    JumpEnabled = bool
+	end    
+})
+
+game:GetService("UserInputService").JumpRequest:connect(function()
+    if JumpEnabled == true then
+    
+        game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass('Humanoid'):ChangeState("Jumping")
+    end
+end)
